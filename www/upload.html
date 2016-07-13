@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>ADN Viewer Demo (server upload)</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
+
+    <!-- jquery -->
+    <script src="jquery-2.1.2.min.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet" />
+
+    <script src="/upload.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Upload and translate a file</h3>
+        </div>
+        <div class="panel-body">
+            <input class="form-control" type="file" id="files" name="files" multiple />
+            <br />
+            <div style="text-align: center;">
+                <a class="btn btn-primary" id="btnTranslateThisOne">Translate this one for me</a>
+            </div>
+
+            <br />
+            <div id="msg"></div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">My URNs</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <input class="form-control" type="text" id="urn" name="urn" value="" />
+                </div>
+                <div class="col-md-4">
+                    <a class="btn btn-primary" id="btnAddThisOne">Add to the list</a>
+                </div>
+            </div>
+
+            <br />
+            <legend>URN list</legend>
+            <div>Click on a urn below to launch the viewer (one-line model)</div>
+            <div id="list"></div>
+        </div>
+
+
+    </div>
+    <a class="btn btn-primary" id="btnDownload">Download Offline Model</a>
+    <legend>off line svf list</legend>
+    <div>Click on a svf below to launch the viewer (off-line model)</div>
+    <div id="offlinelist"></div>
+
+</div>
+
+
+</body>
+</html>
