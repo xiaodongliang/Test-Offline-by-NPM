@@ -1,4 +1,4 @@
-# Test Offline Modelby NPM Package
+# Test Offline Model by NPM Package
 
 ## Description
 
