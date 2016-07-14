@@ -30,6 +30,7 @@ This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view
  
 ## To Do
 * Add resumable uploading
+* Add more error and status messages
 
 ## License
 
