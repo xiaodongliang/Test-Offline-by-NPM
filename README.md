@@ -11,6 +11,7 @@ This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view
 * Rename `_config-view-and-data.js` to `config-view-and-data.js` and replace the credentials placeholders with your own keys or use ENV variables:
 
   clientId: process.env.LMV_CONSUMERKEY || '<your key>',
+  
   clientSecret: process.env.LMV_CONSUMERSECRET || '<your secret>'
 
 * Set up the default bucket name defined by the `defaultBucketKey` variable.
