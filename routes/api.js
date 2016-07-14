@@ -15,9 +15,7 @@
 // DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
-var credentials =(require ('fs').existsSync ('credentials.js') ?
-	  require('../credentials')
-	: (console.log ('No credentials.js file present, assuming using CONSUMERKEY & CONSUMERSECRET system variables.'), require('../credentials_'))) ;
+var config = require('./config-view-and-data.js');
 var express =require ('express') ;
 var request =require ('request') ;
 
@@ -28,8 +26,8 @@ var router =express.Router () ;
 ///////////////////////////////////////////////////////////////////////////////
 router.get ('/token', function (req, res) {
     request.post (
-        credentials.Authentication,
-        { form: credentials.credentials },
+        config.endPoints.authenticate,
+        { form: config.credentials },
         function (error, response, body) {
             if ( !error && response.statusCode == 200 )
                 res.send (body) ;
