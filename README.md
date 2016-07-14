@@ -22,10 +22,10 @@ This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view
 * $ node server.js 
 * Open a browser to visit `localhost:3001/upload.html`
 * Click `choose file` to select a model. Click [Translate this one for me]
-* Wait the process of translation completes. If it succeeds, an new item (urn) will be added to the list under `URN List`
+* Wait the process of translation completes. If it succeeds, a new item (urn) will be added to the list under `URN List`
 * Click one item in the list, a new page will pop out to load the model from your Forge repository as usual. i.e. on-line model
 * Click `Download Off-Line Model`
-* Wait the process of downloading completes. If it succeeds, an new item (svf path) will be added to the list under `Off-Line svf List`. The corresponding package will be available at your server.
+* Wait the process of downloading completes. If it succeeds, a new item (svf path) will be added to the list under `Off-Line svf List`. The corresponding package will be available at your server.
 * Click one item in the list, a new page will pop out to load the model from your server, using the offline libraries.
 * If you have an existing urn, input it in the text box under `My Urns` and click `Add to the list`. Then you can also view the model on-line or download its svf package to view offline model as mentioned above.
  
