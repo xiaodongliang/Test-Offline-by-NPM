@@ -20,7 +20,7 @@ var defaultUrn = 'urn:dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6eGlhb2Rvbmd0ZXN0YnVja2
 
 var _viewer;
 $(document).ready(function () {
-    var tokenurl = 'http://' + window.location.host + '/api/token';
+    var tokenurl = 'http://' + window.location.host + '/ForgeRoute/gettoken'';
     var config = {
         environment : 'AutodeskProduction'
 		//environment : 'AutodeskStaging'
