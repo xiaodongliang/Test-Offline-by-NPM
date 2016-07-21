@@ -47,6 +47,18 @@ router.post ('/file', function (req, res) {
 }) ;
 
 
+router.get ('/gettoken', function (req, res) {
+    lmv.getToken().then(
+        function(response){
+           // _token = response.access_token;
+            res.send (response) ;
+        },
+        function(error){
+            res.send ({'err':'failed!'}) ;
+        });
+});
+
+
 router.post ('/translate', function (req, res) {
 
     translatingprogress = '0%';
