@@ -10,7 +10,14 @@
 		"formidable": ">= 1.0.17",
 		"unirest": ">= 0.4.0",
 		"async": ">= 0.9.0",
-		"view-and-data": "*"
+		"async":       "^1.4.2",
+		"es6-promise": "^3.0.2",
+		"lodash":      "^3.10.1",
+		"mkdirp":      "^0.5.1",
+		"request":     "^2.64.0",
+		"util":        "^0.10.3",
+		"adm-zip":     "^0.4.7",
+		"zlibjs":      "^0.2.0"
 	},
 	"files": [
 		"LICENSE",

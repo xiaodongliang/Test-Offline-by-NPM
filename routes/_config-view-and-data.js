@@ -33,7 +33,8 @@ module.exports = {
   credentials: {
 
     clientId: process.env.LMV_CONSUMERKEY || '<>',
-    clientSecret: process.env.LMV_CONSUMERSECRET || '<>'
+    clientSecret: process.env.LMV_CONSUMERSECRET || '<>',
+    grant_type: 'client_credentials'
   },
 
   // data:read scope only allow to load models

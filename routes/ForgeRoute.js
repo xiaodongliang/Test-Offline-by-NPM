@@ -11,16 +11,23 @@ router.use (bodyParser.json ()) ;
 
 
 var config = require('./config-view-and-data.js');
-var Lmv = require('view-and-data');
+var Lmv = require('./view-and-data.js');
 
 var lmv = new Lmv(config);
 
+
+var uploadprogress = 0.0;;
 var translatingprogress = '0%';
+var downloadprogress = 'started';
 var currentUrn = '';
+var svfPath3d = null;
 
 router.post ('/file', function (req, res) {
 
+    uploadprogress = 0.0;
     translatingprogress = '0%';
+    downloadprogress = 'started';
+
     currentUrn = '';
 
     var filename ='' ;
@@ -46,7 +53,6 @@ router.post ('/file', function (req, res) {
     form.parse(req);
 }) ;
 
-
 router.get ('/gettoken', function (req, res) {
     lmv.getToken().then(
         function(response){
@@ -59,9 +65,11 @@ router.get ('/gettoken', function (req, res) {
 });
 
 
-router.post ('/translate', function (req, res) {
+router.post ('/createBucketAndUpload', function (req, res) {
 
+    uploadprogress = 0.0;
     translatingprogress = '0%';
+    downloadprogress = 'started';
     currentUrn = '';
 
     var filename = req.body.name ;
@@ -96,18 +104,61 @@ router.post ('/translate', function (req, res) {
     //bucket retrieved or created successfully
     function onBucketCreated(response) {
 
-        //see resumableUpload instead for large files
-        lmv.upload(serverFile,
-            config.defaultBucketKey,
-            filename).then(onUploadCompleted, onError);
+        console.log('Uploading to A360 started...');
+
+        fs.stat(serverFile, function (err, stats) {
+            if (err) {
+                console.log('Uploading to A360 failed...' + err);
+                res.send('err',err);
+            }
+            var total = stats.size;
+            var chunkSize = config.fileResumableChunk * 1024 * 1024;
+
+            if( total >  chunkSize)
+            {
+                console.log('   Resumable uploading for large file...');
+
+                lmv.resumableUpload(serverFile,
+                    config.defaultBucketKey,
+                    filename,uploadProgressCallback).then(onResumableUploadCompleted, onError);
+            }
+            else
+            {
+                //single uploading
+                console.log('   Single uploading for small file...');
+                lmv.resumableUpload(serverFile,
+                    config.defaultBucketKey,
+                    filename).then(onSingleUploadCompleted, onError);
+            }
+            //guid for checking uploading status
+            res.send({uploadguid:newGuid()});
+        });
     }
 
-    //upload complete
-    function onUploadCompleted(response) {
+    //single upload complete
+    function onResumableUploadCompleted(response) {
+
+        for(var index in response)
+        {
+            if(response[index].objects && response[index].objects[0].id)
+            {
+                var fileId = response[index].objects[0].id;
+                urn = lmv.toBase64(fileId);
+                console.log('upload to A360 done: ' + urn);
+
+                lmv.register(urn, true).then(onRegister, onError);
+
+                break;
+            }
+        }
+    }
+
+    //single upload complete
+    function onSingleUploadCompleted(response) {
 
         var fileId = response.objects[0].id;
-
         urn = lmv.toBase64(fileId);
+        console.log('upload to A360 done: ' + urn);
 
         lmv.register(urn, true).then(onRegister, onError);
     }
@@ -122,13 +173,14 @@ router.post ('/translate', function (req, res) {
 
             //set a relative long time (15 minutes)
             lmv.checkTranslationStatus(
-                urn, 1000 * 60 * 15, 1000 * 10,
+                urn, 1000 * 60 * 30, 1000 * 10,
                 progressCallback).then(
                 onTranslationCompleted,
                 onError);
 
+            uploadprogress = 1;
             currentUrn = urn;
-            res.send({'urn':urn});
+            //res.send({'urn':urn});
 
         }
         else {
@@ -138,10 +190,19 @@ router.post ('/translate', function (req, res) {
         //res.send(response.Result);
     }
 
+    function uploadProgressCallback(n,nbChunks){
+
+        //uploadprogress = progress;
+
+        uploadprogress = 1.0 * (uploadprogress + 1)/nbChunks ;
+
+        console.log('upload progress: ' + uploadprogress);
+    }
+
     //optional translation progress callback
     //may be used to display progress to user
     function progressCallback(progress) {
-        console.log(progress);
+        console.log('translation progress: ' + progress);
         translatingprogress = progress;
     }
 
@@ -157,6 +218,15 @@ router.post ('/translate', function (req, res) {
 }) ;
 
 
+router.get ('/upload/:uploadguid/progress', function (req, res) {
+    var guid =req.params.uploadguid ;
+    var percentage  = (uploadprogress * 100 ).toString() + '%';
+
+
+    res.send({'progress':percentage,urn:currentUrn});
+
+});
+
 router.get ('/translate/:urn/progress', function (req, res) {
     var urn =req.params.urn ;
 
@@ -166,11 +236,19 @@ router.get ('/translate/:urn/progress', function (req, res) {
         res.send({'err':'Not Current Urn!'});
     }
 
+});
+
+router.get ('/download/:urn/progress', function (req, res) {
+    var urn =req.params.urn ;
+
+    res.send({'progress':downloadprogress,urn:currentUrn,svfpath:svfPath3d});
 
 });
 
 
 router.get ('/downloadsvf/:urn', function (req, res) {
+
+
     var urn =req.params.urn ;
 
     function onError(error) {
@@ -180,16 +258,25 @@ router.get ('/downloadsvf/:urn', function (req, res) {
 
     function onInitialized(response) {
 
+        svfPath3d = null;
         // downloads package to target directory,
         // creates recursively if not exists
-        lmv.download(urn, 'www/offline-models/'+newGuid()).then(
+        lmv.download(urn, 'www/offline-models/'+newGuid(),downloadProgressCallback).then(
             onDataDownloaded,
             onError
         );
+
+        res.send('');
+    }
+
+    function downloadProgressCallback(progress) {
+        console.log('download progress: ' + progress);
+        downloadprogress = progress;
     }
 
     function onDataDownloaded(items) {
 
+        downloadprogress = 'completed';
         console.log('Model downloaded successfully');
 
         var path3d = items.filter(function(item){
@@ -198,6 +285,8 @@ router.get ('/downloadsvf/:urn', function (req, res) {
 
         console.log('3D Viewable path:');
         console.log(path3d);
+
+        svfPath3d = path3d;
 
         //var path2d = items.filter(function(item){
         //    return item.type === '2d';
@@ -210,7 +299,7 @@ router.get ('/downloadsvf/:urn', function (req, res) {
 
 
 
-        res.send({'svfpath':path3d});
+       // res.send({'svfpath':path3d});
     }
 
     //start the test
@@ -232,4 +321,6 @@ function newGuid() {
 
     return guid;
 }
+
+
 module.exports =router ;
