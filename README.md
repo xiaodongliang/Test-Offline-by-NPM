@@ -2,7 +2,7 @@
 
 ## Description
 
-This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view-and-data-npm) for [Forge Viewer](https://developer.autodesk.com/api/view-and-data-api/).
+This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view-and-data-npm) for [Forge Viewer](https://developer.autodesk.com/api/view-and-data-api/). It supports large file uploading.
 
 ## Setup
 
@@ -30,8 +30,7 @@ This demo consumes the [NPM package] (https://github.com/Developer-Autodesk/view
 * If you have an existing urn, input it in the text box under `My Urns` and click `Add to the list`. Then you can also view the model on-line or download its svf package to view offline model as mentioned above.
  
 ## To Do
-* Add resumable uploading
-* Add more error and status messages
+* add progress bar
 
 ## License
 
