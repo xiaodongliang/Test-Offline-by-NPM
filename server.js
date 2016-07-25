@@ -16,7 +16,6 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////////////////
 var favicon = require('serve-favicon');
-var api = require('./routes/api');
 var ForgeRoute = require('./routes/ForgeRoute');
 var express = require('express');
 
