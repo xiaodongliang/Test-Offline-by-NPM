@@ -23,7 +23,6 @@ var app = express();
 
 app.use('/', express.static(__dirname+ '/www') );
 app.use(favicon(__dirname + '/www/images/favicon.ico'));
-app.use('/api', api);
 app.use('/ForgeRoute', ForgeRoute);
 
 app.set('port', process.env.PORT || 3001);
