@@ -27,9 +27,7 @@ router.post ('/file', function (req, res) {
     uploadprogress = 0.0;
     translatingprogress = '0%';
     downloadprogress = 'started';
-
     currentUrn = '';
-
     var filename ='' ;
 
     var form =new formidable.IncomingForm () ;
@@ -53,10 +51,12 @@ router.post ('/file', function (req, res) {
     form.parse(req);
 }) ;
 
+
 router.get ('/gettoken', function (req, res) {
     lmv.getToken().then(
         function(response){
            // _token = response.access_token;
+           console.log(response.access_token);
             res.send (response) ;
         },
         function(error){
@@ -91,7 +91,7 @@ router.post ('/createBucketAndUpload', function (req, res) {
         var bucketCreationData = {
             bucketKey: config.defaultBucketKey,
             servicesAllowed: [],
-            policy: 'transient' //['temporary', 'transient', 'persistent']
+            policy: 'persistent' //['temporary', 'transient', 'persistent']
         };
 
         lmv.getBucket(config.defaultBucketKey,
@@ -156,7 +156,7 @@ router.post ('/createBucketAndUpload', function (req, res) {
     //single upload complete
     function onSingleUploadCompleted(response) {
 
-        var fileId = response.objects[0].id;
+        var fileId = response[0].objects[0].id;
         urn = lmv.toBase64(fileId);
         console.log('upload to A360 done: ' + urn);
 
@@ -224,6 +224,34 @@ router.get ('/upload/:uploadguid/progress', function (req, res) {
 
 
     res.send({'progress':percentage,urn:currentUrn});
+
+});
+
+router.post ('/translate/:urn/startCheckingProgress', function (req, res) {
+    var urn =req.params.urn ;
+    currentUrn = urn;
+    translatingprogress = '0%';
+
+
+    function onError(error) {
+        console.log(error);
+        res.send({'err':error});
+    }
+
+    function progressCallback(progress) {
+        console.log('translation progress: ' + progress);
+        translatingprogress = progress;
+    }
+
+    function onInitialized(response) {
+
+        lmv.checkTranslationStatus(
+            currentUrn, 1000 * 60 * 30, 1000 * 10,
+            progressCallback);
+    }
+    lmv.initialize().then(onInitialized, onError);
+
+    res.send({'startCheckingProgress':'ok'});
 
 });
 
