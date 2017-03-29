@@ -12,10 +12,12 @@ $(document).ready (function () {
             var data =new FormData () ;
             data.append (key, value) ;
 
+            var uniFileName = encodeURIComponent(value.name);
+
             $.ajax ({
                 url: 'http://' + window.location.host + '/ForgeRoute/file',
                 type: 'post',
-                headers: { 'x-file-name': value.name },
+                headers: { 'x-file-name': uniFileName },
                 data: data,
                 cache: false,
                 //dataType: 'json',
